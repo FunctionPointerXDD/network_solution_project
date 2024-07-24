@@ -41,7 +41,12 @@ int	main(void)
 			puts("invalid argument!");
 			continue ;
 		}
-		if ((buf1[0] == '-' && buf2[0] != '-') || (buf1[0] != '-' && buf2[0] == '-')) 
+		int i = 0, j = 0;
+		while (isblank(buf1[i]))
+			i++;
+		while (isblank(buf2[j]))
+			j++;
+		if ((buf1[i] == '-' && buf2[j] != '-') || (buf1[i] != '-' && buf2[j] == '-')) 
 			res = Sub(buf1, buf2);
 		else
 			res = Add(buf1, buf2);
@@ -68,9 +73,9 @@ char	*Sub(const char *buf1, const char *buf2)
 	
 	if (buf1[0] == '-')
 		neg = 1;
-	while (!isdigit(*buf1))
+	while (!isdigit(*buf1) || *buf1 == '0')
 		buf1++;
-	while (!isdigit(*buf2))
+	while (!isdigit(*buf2) || *buf2 == '0')
 		buf2++;
 
 	len1 = strlen(buf1);
@@ -131,9 +136,9 @@ char	*Add(const char *buf1, const char *buf2)
 	
 	if (buf1[0] == '-' && buf2[0] == '-')
 		neg = 1;
-	while (!isdigit(*buf1))
+	while (!isdigit(*buf1) || *buf1 == '0')
 		buf1++;
-	while (!isdigit(*buf2))
+	while (!isdigit(*buf2) || *buf2 == '0')
 		buf2++;
 	len1 = strlen(buf1);
 	len2 = strlen(buf2);
@@ -180,10 +185,13 @@ char	*Add(const char *buf1, const char *buf2)
 int valid_check(const char *buf)
 {
 	int sign = 0;
-	const char *tmp = buf;
+	const char *tmp = NULL;
 
-	if (*tmp == '\0')
+	if (*buf == '\0')
 		return 0;
+	while (isblank(*buf))
+		buf++;
+	tmp = buf;
 	while (*tmp == '-' || *tmp == '+')
 	{
 		sign++;
@@ -191,7 +199,7 @@ int valid_check(const char *buf)
 			return 0;
 		tmp++;
 	}
-	tmp = ++buf;
+	tmp = buf + 1;
 	while (*tmp)
 	{
 		if (!isdigit(*tmp) && !isblank(*tmp))
