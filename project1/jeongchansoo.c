@@ -6,6 +6,8 @@
 
 # define BUFFER_SIZE 1024
 
+/** chansjeo 2024-07-24 **/
+
 void	Swap(int *n1, int *n2);
 char	*Sub(const char *buf1, const char *buf2);
 char	*Add(const char *buf1, const char *buf2);
