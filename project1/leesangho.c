@@ -10,12 +10,12 @@ char* Add(const char* buf1, const char* buf2);
 int check_digit(const char* buf);
 void removeLeadingZeros(char* str);
 
-/*ª¨º¿ ºˆ«‡ «‘ºˆ*/
+/*뺄셈 수행 함수*/
 char* Sub(const char* buf1, const char* buf2)
 {
 	char* res = 0;
 	int	len1 = 0, len2 = 0, raise = 0, size = 0;
-	int negative = 0; //∞·∞˙∞° ¿Ωºˆ¿œ ∞ÊøÏ 1
+	int negative = 0; //결과가 음수일 경우 1
 
 	res = malloc(sizeof(char) * arrayMaxSize);
 	if (!res) {
@@ -25,12 +25,12 @@ char* Sub(const char* buf1, const char* buf2)
 	memset(res, 0, arrayMaxSize);
 
 	if (isdigit(buf1[0]) && buf2[0] == '-') {
-		return Add(buf1, buf2 + 1); //buf2¿« ¿Ωºˆ ∫Œ»£ ¡¶∞≈ »ƒ Add«‘ºˆ »£√‚
+		return Add(buf1, buf2 + 1); //buf2의 음수 부호 제거 후 Add함수 호출
 	}
 
 	if (buf1[0] == '-' && buf2[0] == '-') {
 
-		return Add(buf2+1, buf1); //¿Œºˆ∞° µ— ¥Ÿ ¿Ωºˆ¿œ ∞ÊøÏ ª¨º¿¿∫ buf1 buf2¿« ¿ßƒ°∏¶ ∫Ø∞Ê«œ∞Ì buf2¿« ¿Ωºˆ ±‚»£∏¶ æ¯æÿ µ⁄ µ°º¿«—¥Ÿ.
+		return Add(buf2 + 1, buf1); //인수가 둘 다 음수일 경우 뺄셈은 buf1 buf2의 위치를 변경하고 buf2의 음수 기호를 없앤 뒤 덧셈한다.
 	}
 
 	len1 = strlen(buf1) - 1;
@@ -38,7 +38,7 @@ char* Sub(const char* buf1, const char* buf2)
 	if (len1 < 0 || len2 < 0)
 		return 0;
 
-	// buf1¿« ¿⁄∏¥ºˆ∞° buf2∫∏¥Ÿ ¿€∞≈≥™ ∞∞¥Ÿ∏È ªÁ¿¸º¯ ∫Ò±≥
+	// buf1의 자릿수가 buf2보다 작거나 같다면 사전순 비교
 	if (len1 < len2 || (len1 == len2 && strcmp(buf1, buf2) < 0)) {
 		negative = 1;
 		const char* temp = buf1;
@@ -73,12 +73,12 @@ char* Sub(const char* buf1, const char* buf2)
 		res[i--] = num + '0';
 	}
 
-	// æ’¿« ∫“« ø‰«— 0 ¡¶∞≈
+	// 앞의 불필요한 0 제거
 	removeLeadingZeros(res);
 
 	if (negative) {
 		size = strlen(res);
-		memmove(res + 1, res, size + 1); //¿Ωºˆ ∫Œ»£ ∫Ÿ¿Ã±‚ ¿ß«ÿ «—ƒ≠ π“
+		memmove(res + 1, res, size + 1); //음수 부호 붙이기 위해 한칸 밈
 		res[0] = '-';
 	}
 
@@ -90,7 +90,7 @@ char* Add(const char* buf1, const char* buf2)
 	char* res;
 	int	len1 = 0, len2 = 0, raise = 0;
 	int size;
-	int flag = 0; //¿Œºˆ 2∞≥ ¥Ÿ ¿Ωºˆ¿œ ∞ÊøÏ 1
+	int flag = 0; //인수 2개 다 음수일 경우 1
 
 	res = (char*)malloc(sizeof(char) * arrayMaxSize + 1);
 	if (!res)
@@ -101,12 +101,12 @@ char* Add(const char* buf1, const char* buf2)
 	memset(res, 0, arrayMaxSize);
 
 	if (isdigit(buf1[0]) && buf2[0] == '-') {
-		return Sub(buf1, buf2 + 1); //buf2¿« ¿Ωºˆ ∫Œ»£ ¡¶∞≈ »ƒ ¿¸¥ﬁ
+		return Sub(buf1, buf2 + 1); //buf2의 음수 부호 제거 후 전달
 	}
 
 	if (buf1[0] == '-' && buf2[0] == '-') {
-		memmove(buf1, buf1 + 1, strlen(buf1) + 1); //¿Ωºˆ ∫Œ»£ ¡¶∞≈∏¶ ¿ß«ÿ «—ƒ≠ ¥Á±Ë
-		memmove(buf2, buf2 + 1, strlen(buf2) + 1); //¿Ωºˆ ∫Œ»£ ¡¶∞≈∏¶ ¿ß«ÿ «—ƒ≠ ¥Á±Ë
+		memmove(buf1, buf1 + 1, strlen(buf1) + 1); //음수 부호 제거를 위해 한칸 당김
+		memmove(buf2, buf2 + 1, strlen(buf2) + 1); //음수 부호 제거를 위해 한칸 당김
 		flag = 1;
 	}
 
@@ -139,10 +139,10 @@ char* Add(const char* buf1, const char* buf2)
 		res[size] = (char)(num + '0');
 	}
 
-	// æ’¿« ∫“« ø‰«— 0 ¡¶∞≈
+	// 앞의 불필요한 0 제거
 	removeLeadingZeros(res);
 
-	if (flag == 1){ //¿Œºˆ 2∞≥ ∏µŒ ¿Ωºˆø¥¿∏π«∑Œ ø¨ªÍ »ƒ «—ƒ≠ π–∞Ì ¿Ωºˆ ∫Œ»£ ∫Ÿ¿”
+	if (flag == 1) { //인수 2개 모두 음수였으므로 연산 후 한칸 밀고 음수 부호 붙임
 		memmove(res + 1, res, strlen(res) + 1);
 		res[0] = '-';
 	}
@@ -151,12 +151,12 @@ char* Add(const char* buf1, const char* buf2)
 
 int check_digit(const char* buf)
 {
-	// √π π¯¬∞ πÆ¿⁄∞° '-'¿Œ ∞ÊøÏ ¿Ã∏¶ π´Ω√«œ∞Ì ¿Ã»ƒ πÆ¿⁄∏¶ ∞ÀªÁ
+	// 첫 번째 문자가 '-'인 경우 이를 무시하고 이후 문자를 검사
 	if (*buf == '-') {
 		buf++;
 	}
 
-	// ≥≤¿∫ πÆ¿⁄∞° ∏µŒ º˝¿⁄¿Œ¡ˆ ∞ÀªÁ
+	// 남은 문자가 모두 숫자인지 검사
 	while (*buf) {
 		if (!isdigit(*buf++)) {
 			return 0;
@@ -186,8 +186,8 @@ int	main(void)
 	char* res = 0;
 	char op = 0;
 
-	buf1 = malloc(sizeof(char) * arrayMaxSize); // char * arrayMaxSize ¿⁄∏Æ «“¥Á , +1 ¿∫ ≥Œ∞™
-	buf2 = malloc(sizeof(char) * arrayMaxSize); // char * arrayMaxSize ¿⁄∏Æ «“¥Á , +1 ¿∫ ≥Œ∞™
+	buf1 = malloc(sizeof(char) * arrayMaxSize); // char * arrayMaxSize 자리 할당 , +1 은 널값
+	buf2 = malloc(sizeof(char) * arrayMaxSize); // char * arrayMaxSize 자리 할당 , +1 은 널값
 	if (!buf1 || !buf2)
 	{
 		puts("malloc failed!");
@@ -201,8 +201,8 @@ int	main(void)
 	scanf("%c%*c", &op);
 	fgets(buf2, arrayMaxSize, stdin);
 
-	buf1[strlen(buf1) - 1] = '\0'; // ∞≥«‡ ¡¶∞≈, // √÷¥Î ¿‘∑¬ ¿⁄∏¥ºˆ: arrayMaxSize
-	buf2[strlen(buf2) - 1] = '\0'; // ∞≥«‡ ¡¶∞≈, // √÷¥Î ¿‘∑¬ ¿⁄∏¥ºˆ: arrayMaxSize
+	buf1[strlen(buf1) - 1] = '\0'; // 개행 제거, // 최대 입력 자릿수: arrayMaxSize
+	buf2[strlen(buf2) - 1] = '\0'; // 개행 제거, // 최대 입력 자릿수: arrayMaxSize
 
 	if (!check_digit(buf1) || !check_digit(buf2))
 	{
@@ -227,4 +227,3 @@ int	main(void)
 
 	return 0;
 }
-
